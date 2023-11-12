@@ -1,0 +1,39 @@
+.custom-context-menu {
+  margin: 1em;
+  position: fixed;
+  border: 1px solid var(--menu_background, white);
+  list-style: none;
+  padding: 5px;
+  border-radius: 5px;
+  /* box-shadow: 0px 2px 6px 2px #ddd; */
+  background: var(--menu_background, white);
+  color: var(--menu_font, black);
+  display: block;
+  min-width: 90px;
+}
+
+.custom-context-menu.hidden {
+  display: none;
+}
+.custom-context-menu hr {
+  margin: 1px;
+}
+.custom-context-menu li {
+  padding: 8px 12px;
+  /* border-bottom: 1px solid #f0f2f5; */
+  border-radius: 5px;
+  user-select: none;
+  transition: all 0.1s;
+  list-style: none;
+}
+.custom-context-menu li:last-child {
+  border-bottom: none;
+}
+.custom-context-menu li:hover {
+  cursor: pointer;
+  background-color: var(--main, #0170fe);
+  color: #fff;
+}
+.custom-context-menu li:active {
+  background-color: #f0f2f7;
+}

@@ -1,0 +1,10 @@
+:root {
+  --body_color: #2c3e50;
+  --sidebar_color: #212a3f;
+  --checkbox_color: rgba(255, 255, 255, 0.3);
+  --font_color: white;
+}
+
+.notice_back_color {
+  background: #212a3f;
+}

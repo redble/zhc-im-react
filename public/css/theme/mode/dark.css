@@ -1,0 +1,13 @@
+:root {
+  --body_color: #212121;
+  --sidebar_color: #191919;
+  --checkbox_color: rgba(255, 255, 255, 0.3);
+
+  color-scheme: dark !important;
+  --menu_background: #333333;
+  --menu_font: white;
+}
+
+.notice_back_color {
+  background: #191919;
+}
