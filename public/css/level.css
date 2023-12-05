@@ -14,13 +14,9 @@
 
 .mynick {
   background: #333636;
-  cursor: pointer;
   border-radius: 5px;
   display: inline-block;
   color: white;
-}
-.mynick:hover {
-  text-decoration: underline;
 }
 
 .trip {

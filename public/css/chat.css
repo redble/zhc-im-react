@@ -150,6 +150,10 @@
 .chat-notice {
   font-size: 0.8rem;
 }
+.chat-notice code {
+  line-height: normal;
+}
+.chat-notice img,
 .chat-receiver img,
 .chat-sender img {
   max-width: 100%;

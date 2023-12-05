@@ -2,6 +2,7 @@ a {
   color: var(--main, palevioletred);
   text-decoration: none;
   cursor: pointer;
+  display: inline-block;
 }
 
 a:hover {
@@ -15,7 +16,7 @@ mark {
 
 code {
   display: inline-block;
-  padding: 4px;
+  padding: 3px;
   font-size: 90%;
   color: #ffffff;
   border-radius: 5px;
@@ -185,4 +186,14 @@ input::placeholder {
   width: 100%;
   margin: 5px;
   justify-content: center;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 3px;
+  margin-top: 5px;
 }

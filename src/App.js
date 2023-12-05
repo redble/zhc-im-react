@@ -2,9 +2,15 @@
   Power by Dr0.
   牢牢记住，逝者为大！
   See You Again
+  update in 2023/12/3
+  请注意，App.js 的 pushMessage函数只能使用react对象 
+  html使用: pushMessage(rawhtml('html'))
 */
+
 import React, { Fragment } from "react";
 import { createAsk, createInput } from "./pop";
+import image_whitelist from "./image_whitelist";
+import { Turnstile } from "@marsidev/react-turnstile";
 import {
   ContextMenu,
   showMenu,
@@ -19,8 +25,8 @@ const $lsget = (e) => localStorage[e] || false;
 const $lsset = (k, v) => (localStorage[k] = v);
 var temp_log = [];
 console._log = console.log;
-console.log = (...e) =>
-  !console._log(e) && temp_log.push({ time: formattedDate(), obj: e });
+// console.log = (...e) =>
+//   !console._log(e) && temp_log.push({ time: formattedDate(), obj: e });
 const fuckDefaultMenu = (e) =>
   console.log("fuckDef menu", e.preventDefault(), "1");
 const isMobile = () =>
@@ -94,37 +100,7 @@ var global_config = {
     { text: "禁言10分钟", data: { cmd: "dumb", time: 10 } },
     { text: "永久禁言", data: { cmd: "dumb", time: 0 } },
   ],
-  imgHostWhitelist: [
-    // 这些是由小张添加的
-    "i.loli.net",
-    "s2.loli.net", // SM-MS图床
-    "s1.ax1x.com",
-    "s2.ax1x.com",
-    "z3.ax1x.com",
-    "s4.ax1x.com",
-    "z1.ax1x.com", // 路过图床
-    "i.postimg.cc",
-    "gimg2.baidu.com", // Postimages图床 百度
-    "files.catbox.moe",
-    "img.thz.cool",
-    "img.liyuv.top",
-    "share.lyka.pro", // 这些是ee加的（被打
-    document.domain, // 允许我自己
-    "img.zhangsoft.cf", // 小张图床
-    "bed.paperee.repl.co",
-    "filebed.paperee.guru", // 纸片君ee的纸床
-    "imagebed.s3.bitiful.net", //Dr0让加的
-    "captcha.dr0.lol", // Dr0's Captcha
-    "img1.imgtp.com",
-    "imgtp.com", // imgtp
-    "api.helloos.eu.org", // HelloOsMe's API
-    "cdn.luogu.com.cn", // luogu
-    "images.weserv.nl", // Weserv的图片代理
-    "api.remelens.link", // HelloOsMe's API (another domain
-    "pic.imgdb.cn", // 聚合图床
-    "blog.mrzhang365.cf", // MrZhang365's blog
-    "t00img.yangkeduo.com", //拼多多图床
-  ],
+  imgHostWhitelist: image_whitelist, //image_whitelist.js
   themes: [
     "amber",
     "bubblegum",
@@ -172,7 +148,6 @@ var global_config = {
     "[ZhangChat增强脚本](https://greasyfork.org/zh-CN/scripts/458989-zhchat%E5%A2%9E%E5%BC%BA%E8%84%9A%E6%9C%AC)",
     "---",
     `2023.02.23~${formattedToday()} [小张聊天室开发组](https://githubfast.com/ZhangChat-Dev-Group) 致`,
-    "**本站由[雨云](https://www.rainyun.com/MjcxMTc=_)提供计算服务**",
   ].join("\n"),
   hls: ["darcula", "rainbow", "zenburn", "androidstudio"],
   level: {
@@ -437,7 +412,9 @@ var global_config = {
         "清空消息",
         "确定要清空全部消息吗?",
         (e) =>
-          e && !global_config.doMessage((e) => []) && pushInfo("历史记录已清空")
+          e &&
+          !global_config.doMessage((e) => []) &&
+          pushInfoEx("历史记录已清空")
       );
     },
     //一起看视频
@@ -450,7 +427,7 @@ var global_config = {
           "设置视频",
           "请输入视频文件地址（留空则清除公共视频）：",
           (e) => {
-            e ? good(e.input) : fuck("");
+            e.input ? good(e.input) : fuck("");
           }
         );
       })
@@ -537,7 +514,7 @@ var global_config = {
     quoteMessage(e) {
       if (e.html) {
         if (!global_config.showHtmlCode) return;
-        pushInfo("```html\n" + e.text);
+        pushInfoEx("```html\n" + e.text);
         return;
       }
       var replyText = buildReplyText(
@@ -607,7 +584,6 @@ var global_config = {
                 "请输入呢称",
                 "呢称",
                 (e) => {
-                  console.log(e);
                   if (!e.state)
                     fuck("你取消了加入。 在输入框上按回车可以重新加入。");
                   else if (nullStr(e.input))
@@ -678,16 +654,16 @@ var global_config = {
         global_config.ws.nick = e.text;
       }
       global_config.users.changeNick({ rawnick: e.nick, nick: e.text });
-      pushInfo(`${e.nick} 更名为 ${e.text}`);
+      pushInfoEx(`${e.nick} 更名为 ${e.text}`);
     },
     onlineSet(e) {
-      pushInfo(`在线用户：${e.nicks.join(", ")}`);
+      pushInfoEx(`在线用户：${e.nicks.join(", ")}`);
       pushWelcomeButton("欢迎一下");
       global_config.users.set(e.users);
     },
     onlineRemove(e) {
       global_config.users.remove({ nick: e.nick });
-      pushInfo(`${e.nick} 离开了聊天室`);
+      pushInfoEx(`${e.nick} 离开了聊天室`);
     },
     onlineAdd(e) {
       //console.log("onlineadd", e);
@@ -713,7 +689,7 @@ var global_config = {
           joinNotice += `\n识别码：${e.trip}`;
         }
 
-        pushInfo(joinNotice); // 仿Discord
+        pushInfoEx(joinNotice); // 仿Discord
 
         if (global_config.sidebar_conf["fun-system"]) {
           pushWelcomeButton("欢迎一下");
@@ -734,13 +710,14 @@ var global_config = {
               args,
               id: args.id,
               color: args.color,
+              time: args.time,
             })
           ),
         ];
       });
 
       // e.history.forEach((j) => global_config.commands.chat(j));
-      pushInfo("—— 以上是历史记录 ——");
+      pushInfoEx("—— 以上是历史记录 ——");
     },
     "set-video": (e) => {
       global_config.pushMessage(
@@ -751,8 +728,39 @@ var global_config = {
         </div>
       );
     },
-    info: (e) => pushInfo(e.text),
-    warn: (e) => pushWarn(e.text),
+    captcha: (e) => {
+      let captcha_obj;
+      pushInfoEx("当前频道认为你不是人，所以请先完成下面的人机验证：");
+      const captchaCallback = (e) => {
+        global_config.doMessage((j) => j.filter((e) => e != captcha_obj));
+        pushInfoEx("已确认你是人，正在加入频道，请稍等片刻...");
+        if (!global_config.ws.joinPayload)
+          return pushWarnEx(
+            "发生未知错误：找不到存档的join包\n请尝试刷新网页。"
+          );
+        global_config.ws.joinPayload.captcha = e;
+        global_config.ws.send(global_config.ws.joinPayload);
+      };
+      global_config.pushMessage(
+        (captcha_obj = BubbleBuilderEx(
+          {
+            nick: "cloudflare",
+            trip: "验证码",
+            _react_obj: true,
+            text: <Turnstile siteKey={e.sitekey} onSuccess={captchaCallback} />,
+          },
+          true
+        ))
+      );
+    },
+    info: (e) => {
+      pushInfo({ text: e.text, time: e.time });
+      console.log(e);
+    },
+    warn: (e) => {
+      pushWarn({ text: e.text, time: e.time });
+      console.log(e);
+    },
     delmsg: (e) => {
       global_config.doMessage((j) =>
         j.map((u) => {
@@ -935,7 +943,7 @@ function Sidebar() {
           isLazy: true,
           func: (e) =>
             (global_config.showHtmlCode = e) &&
-            pushInfo(
+            pushInfoEx(
               "您已开启HTML信息调试模式，右键点击HTML信息对应的昵称即可查看HTML信息源码，此模式将在下次打开网页的时候自动关闭"
             ),
         },
@@ -950,6 +958,7 @@ function Sidebar() {
     React.useState(sidebar_conf);
   //侧边栏固定
   let handleLeave = (e) => {
+    //console.log("handleLeave");
     var j = {};
     if (e.__type && e.__type == "document") j = e.toElement || e.relatedTarget;
     else j = e.nativeEvent.toElement || e.nativeEvent.relatedTarget;
@@ -960,12 +969,14 @@ function Sidebar() {
     } catch (g) {
       return;
     }
-    if (!sidebar_local_ref["pin-sidebar"])
+    if (!global_config.sidebar_conf["pin-sidebar"])
       sidebar_ref_set({ sidebar: "", sidebar_content: "hidden" });
   };
   let handleOn = (e) => {
     e.stopPropagation();
-    sidebar_ref_set({ sidebar: "expend", sidebar_content: "" });
+    // console.log("handleOn");
+    if (!global_config.sidebar_conf["pin-sidebar"])
+      sidebar_ref_set({ sidebar: "expend", sidebar_content: "" });
   };
 
   let sidebar_content = (
@@ -1125,7 +1136,7 @@ function Sidebar() {
           value={selects["ws_url"]}
           onChange={(e) =>
             setSelects("ws_url", (localStorage["ws_url"] = e.target.value)) &&
-            pushInfo(
+            pushInfoEx(
               "你已修改连接线路，请刷新界面来应用修改\n请注意：修改连接线路可能会造成连接不稳定，如果您不了解它，请立刻更改回去。"
             )
           }
@@ -1216,6 +1227,7 @@ function Bubble({
   color,
   time,
   html,
+  _react_obj,
 }) {
   let ref1 = React.useRef(null),
     ref2 = React.useRef(null);
@@ -1320,26 +1332,52 @@ function Bubble({
         >
           <span className="baseblock">
             {trip ? <span className="trip">{trip}</span> : null}
-            <span
-              className="mynick"
-              style={color ? { color: "#" + color } : null}
-              onClick={AtNick}
-            >
-              {nick}
+            <span className="mynick">
+              <a
+                style={{
+                  color: /(^[0-9A-F]{6}$)|(^[0-9A-F]{3}$)/i.test(color)
+                    ? color
+                    : "#ffffff",
+                }}
+                title={formattedDate(time)}
+                onClick={AtNick}
+              >
+                {nick}
+              </a>
             </span>
           </span>
           <span className={bubbleClass}>{level}</span>
         </div>
         <div
           className={!html ? "bubble" : "bubble_html"}
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+          dangerouslySetInnerHTML={
+            _react_obj == true
+              ? undefined
+              : {
+                  __html: content,
+                }
+          }
+        >
+          {_react_obj == true ? content : undefined}
+        </div>
       </div>
     </div>
   );
 }
 function BubbleBuilder(e) {
-  const { me = false, nick, trip, head, text, args, html, id, color, time } = e;
+  const {
+    me = false,
+    nick,
+    trip,
+    head,
+    text,
+    args,
+    html,
+    _react_obj,
+    id,
+    color,
+    time,
+  } = e;
   console.log("bubbleBuild args:", e);
   return (
     <Bubble
@@ -1363,6 +1401,7 @@ function BubbleBuilder(e) {
       }}
       html={html}
       time={time}
+      _react_obj={_react_obj}
     />
   );
 }
@@ -1378,13 +1417,15 @@ function BubbleBuilderEx(args, html = false) {
     color: args.color,
     html,
     time: args.time,
+    _react_obj: args._react_obj == true,
   });
 }
 /*********************************************/
-function Widget({ text, type, nick, html = false }) {
+function Widget({ text, type, nick, time, html = false }) {
   let ref = React.useRef(null);
   let menu = ContextMenu({
     menus: [
+      time ? { name: `${formattedDate(time)}` } : undefined,
       {
         name: "引用",
         click: (e) => global_config.ui.quoteMessage({ nick, text }),
@@ -1425,14 +1466,24 @@ function Widget({ text, type, nick, html = false }) {
     </div>
   );
 }
-function pushWidget(text, type = "info", nick = "*") {
+function pushWidget({ text, type = "info", nick = "*", time }) {
   global_config.atBottom = global_config.ui.isAtBottom();
   global_config.pushMessage(
-    <Widget key={getUuid()} type={type} nick={nick} text={text} />
+    <Widget
+      key={getUuid()}
+      type={type}
+      nick={nick}
+      text={text}
+      time={time || Date.now()}
+    />
   );
 }
-const pushInfo = (t, nick = "*") => pushWidget(t, "info", nick);
-const pushWarn = (t, nick = "*") => pushWidget(t, "warn", nick);
+const pushInfo = ({ text, time, nick = "*" }) =>
+  pushWidget({ text, type: "info", nick, time });
+const pushWarn = ({ text, time, nick = "*" }) =>
+  pushWidget({ text, type: "warn", nick, time });
+var pushInfoEx = (e) => pushInfo({ text: e }),
+  pushWarnEx = (e) => pushWarn({ text: e });
 function pushWelcomeButton(text) {
   global_config.atBottom2 = global_config.ui.isAtBottom();
   global_config.pushMessage(
