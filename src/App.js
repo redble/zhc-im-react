@@ -11,6 +11,7 @@ import React, { Fragment } from "react";
 import { createAsk, createInput } from "./pop";
 import image_whitelist from "./image_whitelist";
 import { Turnstile } from "@marsidev/react-turnstile";
+import VConsole from "vconsole";
 import {
   ContextMenu,
   showMenu,
@@ -19,14 +20,9 @@ import {
   showMenuEx,
   fuckALLMenu,
 } from "./meum";
-import useSyncCallback from "./useSyncCallback";
 const $ = (e) => document.querySelector(e);
 const $lsget = (e) => localStorage[e] || false;
 const $lsset = (k, v) => (localStorage[k] = v);
-var temp_log = [];
-console._log = console.log;
-// console.log = (...e) =>
-//   !console._log(e) && temp_log.push({ time: formattedDate(), obj: e });
 const fuckDefaultMenu = (e) =>
   console.log("fuckDef menu", e.preventDefault(), "1");
 const isMobile = () =>
@@ -79,6 +75,7 @@ const formattedDate = (timestamp) => {
 var global_config = {
   client_name: "小张聊天室 IM版",
   client_title: "IM - ZhangChat",
+  vconsole: ((e) => (e = new VConsole()) && !e.hideSwitch() && e)(),
   windowActive: true,
   lastSent: [""],
   lastSentPos: 0,
@@ -86,6 +83,7 @@ var global_config = {
   ws_urls: [
     ["wss://chat.zhangsoft.link/ws", "主线路 (Cloudflare)"],
     ["wss://rain.chat.zhangsoft.link/ws", "备用线路 (雨云)"],
+    ["wss://hack.chat/chat-ws", "hack.chat"],
   ],
   isMobile: isMobile(),
   pageMode: decodeURI(window.location.search.replace(/^\?/, "")) == "",
@@ -371,12 +369,11 @@ var global_config = {
         </div>
       );
     },
-    openNewLink(link) {
-      let a = document.createElement("a");
-      a.setAttribute("href", link);
-      a.setAttribute("target", "_blank");
-      a.click();
-    },
+    openNewLink: (e, j) =>
+      (j = document.createElement("a")) &&
+      !j.setAttribute("href", e) &&
+      !j.setAttribute("target", "_blank") &&
+      j.click(),
     verifyLink(link) {
       var linkHref = window.Remarkable.utils.escapeHtml(
         window.Remarkable.utils.replaceEntities(link.href)
@@ -495,11 +492,9 @@ var global_config = {
 
       this.updateInputSize();
     },
-    getDomain(link) {
-      var a = document.createElement("a");
-      a.href = link;
-      return a.hostname;
-    },
+    getDomain: (e, j) =>
+      !!(j = document.createElement("a")) && !!(j.href = e) && j.hostname,
+
     isWhiteListed(link) {
       return (
         global_config.imgHostWhitelist.indexOf(
@@ -531,7 +526,7 @@ var global_config = {
 
       if (_modCmd == null) {
         //如果未设置
-        return pushWarn("您尚未设置管理员操作");
+        return pushWarnEx("您尚未设置管理员操作");
       }
       toSend.nick = nick;
       global_config.ws.send(toSend);
@@ -601,7 +596,7 @@ var global_config = {
                     true &&
                     (localStorage["nick"] = global_config.ws.rawnick = e))
               )
-              .catch((e) => !(shouldconnect = false) && pushWarn(e));
+              .catch((e) => !(shouldconnect = false) && pushWarnEx(e));
             shouldconnect && (global_config.ws.nick = temp_nick.split("#")[0]);
           }
           if (shouldconnect || global_config.sidebar_conf["auto-login"]) {
@@ -620,7 +615,7 @@ var global_config = {
           this.isConnect = false;
           if (this.nowConnect > this.maxConnect) {
             this.isNeedReload = true;
-            pushWarn("重连次数太多，请刷新页面");
+            pushWarnEx("重连次数太多，请刷新页面");
             return;
           } else this.join();
           this.nowConnect++;
@@ -775,7 +770,7 @@ var global_config = {
     },
     html: (e) => {
       if (!global_config.sidebar_conf["allow-html"]) {
-        return pushWarn(
+        return pushWarnEx(
           `您收到了一条来自 ${e.nick} 的 HTML信息，但是由于您不允许显示HTML信息，因此我们屏蔽了它`
         );
       }
@@ -783,6 +778,7 @@ var global_config = {
     },
   },
 };
+const isMe = (e) => e == global_config.ws.nick;
 window.global_config = global_config;
 /********************************************************************************************************************************************* */
 const rawhtml = (e) => (
@@ -1151,16 +1147,12 @@ function Sidebar() {
       <hr />
       <Button
         onClick={() => {
-          createAsk(
-            "日志",
-            temp_log
-              .map((e) => `[${e.time}] ${JSON.stringify(e.obj)}`)
-              .join("\n")
-          );
+          global_config.vconsole.show();
         }}
       >
-        日志
+        VConsole控制台
       </Button>
+      <hr />
       <Button onClick={global_config.ws.sethead}>设置头像</Button>
       <hr />
       <Button onClick={global_config.ui.setvideo}>设置公共视频</Button>
@@ -1289,7 +1281,7 @@ function Bubble({
               },
             }),
         },
-        getMin(time) < 60 * 2 && !is_delmsg
+        getMin(time) < 60 * 2 && !is_delmsg && isMe(nick)
           ? {
               name: "撤回",
               click: (e) =>
@@ -1335,9 +1327,7 @@ function Bubble({
             <span className="mynick">
               <a
                 style={{
-                  color: /(^[0-9A-F]{6}$)|(^[0-9A-F]{3}$)/i.test(color)
-                    ? color
-                    : "#ffffff",
+                  color: color == undefined ? "#ffffff" : "#" + color,
                 }}
                 title={formattedDate(time)}
                 onClick={AtNick}
@@ -1734,6 +1724,7 @@ function App() {
       console.log("isMobile", isMobile());
     }
   }, []);
+
   return (
     <>
       <Chat />
