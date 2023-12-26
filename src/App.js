@@ -693,7 +693,7 @@ var global_config = {
     },
     banclient(e) {
       localStorage['client-banned'] = true
-      location.reload()    // 重载，开启震撼时代
+      window.location.reload()    // 重载，开启震撼时代
     },
     history(j) {
       global_config.doMessage((e) => {
