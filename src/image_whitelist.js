@@ -6,6 +6,7 @@ export default [
   "s2.ax1x.com",
   "z3.ax1x.com",
   "s4.ax1x.com",
+  "s11.axlx.com",
   "z1.ax1x.com", // 路过图床
   "i.postimg.cc",
   "gimg2.baidu.com", // Postimages图床 百度
@@ -29,4 +30,7 @@ export default [
   "t00img.yangkeduo.com", //拼多多图床
   "pic.ziyuan.wang", // img.ink you are so fast
   "cmd.zzcm.fun", // cmd1152's
+  "cdn.discordapp.com",  // discord
+  "fs-im-kefu.7moor-fs1.com",  // 涟漪文件直链
+  "img.duan.ee",  // 啊断图床
 ];
