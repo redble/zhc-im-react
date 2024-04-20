@@ -29,8 +29,9 @@ export default [
   "blog.zhangsoft.link", // MrZhang365's blog
   "t00img.yangkeduo.com", //拼多多图床
   "pic.ziyuan.wang", // img.ink you are so fast
+  "pic2.ziyuan.wang",
   "cmd.zzcm.fun", // cmd1152's
   "cdn.discordapp.com",  // discord
   "fs-im-kefu.7moor-fs1.com",  // 涟漪文件直链
-  "img.duan.ee",  // 啊断图床
+  "img.duan.ee",  // 阿段图床
 ];
