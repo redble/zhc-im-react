@@ -81,8 +81,8 @@ var global_config = {
   lastSentPos: 0,
   unread: 0,
   ws_urls: [
-    ["wss://chat.zhangsoft.link/ws", "主线路 (Cloudflare)"],
-    ["wss://rain.chat.zhangsoft.link/ws", "备用线路 (雨云)"],
+    ["wss://chat.zhangsoft.link/ws", "主线路 (乐青映射)"],
+    ["wss://cf-chat.zhangsoft.link/ws", "备用线路1 (Cloudflare)"],
     ["wss://hack.chat/chat-ws", "hack.chat"],
   ],
   isMobile: isMobile(),
