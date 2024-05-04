@@ -83,6 +83,7 @@ var global_config = {
   ws_urls: [
     ["wss://chat.zhangsoft.link/ws", "主线路 (乐青映射)"],
     ["wss://cf-chat.zhangsoft.link/ws", "备用线路1 (Cloudflare)"],
+    ["wss://ee-chat.zhangsoft.link/ws", "备用线路2 (ee的服务器)"],
     ["wss://hack.chat/chat-ws", "hack.chat"],
   ],
   isMobile: isMobile(),
@@ -133,7 +134,7 @@ var global_config = {
     "---",
     "本聊天室开发者：",
     "@MrZhang365 - [小张的博客](https://blog.mrzhang365.cf/) && [小张软件](https://www.zhangsoft.cf/)",
-    "@paperee - [纸片君ee的个人主页](https://paperee.guru/)",
+    "@paperee - [纸片君ee的个人主页](https://paperee.guru/) （非常感谢纸片君ee为我们提供服务器来架设 备用线路2）",
     "---",
     "更多代码贡献者：",
     "@[4n0n4me](http://githubfast.com/xjzh123/) - 编写了[hackchat\\+\\+客户端](https://hc.thz.cool/)",
